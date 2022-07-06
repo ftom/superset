@@ -19,12 +19,14 @@
 #
 HYPHEN_SYMBOL='-'
 
-gunicorn \
+newrelic-admin run-program \
+    gunicorn \
     --bind "${SUPERSET_BIND_ADDRESS:-0.0.0.0}:${SUPERSET_PORT:-8088}" \
     --access-logfile "${ACCESS_LOG_FILE:-$HYPHEN_SYMBOL}" \
     --error-logfile "${ERROR_LOG_FILE:-$HYPHEN_SYMBOL}" \
     --workers ${SERVER_WORKER_AMOUNT:-1} \
     --worker-class ${SERVER_WORKER_CLASS:-gthread} \
+    --worker-connections ${SERVER_WORKER_CONNECTIONS:-1000} \
     --threads ${SERVER_THREADS_AMOUNT:-20} \
     --timeout ${GUNICORN_TIMEOUT:-60} \
     --keep-alive ${GUNICORN_KEEPALIVE:-2} \
