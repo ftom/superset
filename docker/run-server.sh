@@ -29,6 +29,7 @@ newrelic-admin run-program \
     --worker-connections ${SERVER_WORKER_CONNECTIONS:-1000} \
     --threads ${SERVER_THREADS_AMOUNT:-20} \
     --timeout ${GUNICORN_TIMEOUT:-60} \
+    --keep-alive ${GUNICORN_KEEPALIVE:-2} \
     --limit-request-line ${SERVER_LIMIT_REQUEST_LINE:-0} \
     --limit-request-field_size ${SERVER_LIMIT_REQUEST_FIELD_SIZE:-0} \
     "${FLASK_APP}"
