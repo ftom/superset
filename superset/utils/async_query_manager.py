@@ -142,6 +142,7 @@ class AsyncQueryManager:
                     httponly=True,
                     secure=self._jwt_cookie_secure,
                     domain=self._jwt_cookie_domain,
+                    samesite="None",
                 )
 
             return response
