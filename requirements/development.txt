@@ -80,6 +80,10 @@ unicodecsv==0.14.1
     #   tabulator
 xlrd==2.0.1
     # via tabulator
-
+cachetools==5.2.0
+newrelic==7.14.0.177
+prophet==1.1
+httpx==0.23.0
+gevent==21.12.0
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
