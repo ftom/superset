@@ -2,9 +2,7 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "superset.fullname" . }}-worker
-  labels:
-    {{- include "superset.labels" . | nindent 4 }}
+  name: {{ include "superset.fullname" . }}-worker-autoscaler
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
