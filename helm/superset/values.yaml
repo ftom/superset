@@ -229,6 +229,17 @@ supersetNode:
     enabled: false
     minReplicas: 1
     maxReplicas: 10
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   command:
     - "/bin/sh"
     - "-c"
@@ -260,14 +271,6 @@ supersetNode:
   podAnnotations: {}
   ## Labels to be added to supersetNode pods
   podLabels: {}
-  # Resource settings for the supersetNode pods - these settings overwrite might existing values from the global resources object defined above.
-  resources: {}
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
 ##
 ## Superset worker configuration
 supersetWorker:
@@ -277,6 +280,17 @@ supersetWorker:
     minReplicas: 1
     maxReplicas: 10
   targetCPUUtilizationPercentage: 80
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   command:
     - "/bin/sh"
     - "-c"
@@ -296,14 +310,6 @@ supersetWorker:
   podAnnotations: {}
   ## Labels to be added to supersetWorker pods
   podLabels: {}
-  # Resource settings for the supersetWorker pods - these settings overwrite might existing values from the global resources object defined above.
-  resources: {}
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
 ##
 ## Superset beat configuration (to trigger scheduled jobs like reports)
 supersetCeleryBeat:
