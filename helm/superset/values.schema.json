@@ -261,6 +261,27 @@
                 "env": {
                     "type": "object"
                 },
+                "replicas": {
+                    "type": "integer"
+                },
+                "targetCPUUtilizationPercentage": {
+                    "type": "integer"
+                },
+                "autoscaling": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "minReplicas": {
+                            "type": "integer"
+                        },
+                        "maxReplicas": {
+                            "type": "integer"
+                        }
+                    }
+                },
                 "forceReload": {
                     "type": "boolean"
                 },
@@ -293,6 +314,27 @@
             "properties": {
                 "command": {
                     "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.23.0/_definitions.json##/definitions/io.k8s.api.core.v1.Container/properties/command"
+                },
+                "replicas": {
+                    "type": "integer"
+                },
+                "targetCPUUtilizationPercentage": {
+                    "type": "integer"
+                },
+                "autoscaling": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "minReplicas": {
+                            "type": "integer"
+                        },
+                        "maxReplicas": {
+                            "type": "integer"
+                        }
+                    }
                 },
                 "forceReload": {
                     "type": "boolean"
