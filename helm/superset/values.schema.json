@@ -282,6 +282,9 @@
                         }
                     }
                 }, 
+                "resources": {
+                    "type": "object"
+                },
                 "forceReload": {
                     "type": "boolean"
                 },
@@ -333,6 +336,9 @@
                         }
                     }
                 }, 
+                "resources": {
+                    "type": "object"
+                },
                 "forceReload": {
                     "type": "boolean"
                 },
