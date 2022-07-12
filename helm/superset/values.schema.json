@@ -264,9 +264,6 @@
                 "replicas": {
                     "type": "integer"
                 },
-                "targetCPUUtilizationPercentage": {
-                    "type": "integer"
-                }, 
                 "autoscaling": {
                     "type": "object",
                     "additionalProperties": false,
@@ -278,6 +275,12 @@
                             "type": "integer"
                         },
                         "maxReplicas": {
+                            "type": "integer"
+                        },
+                        "targetCPUUtilizationPercentage": {
+                            "type": "integer"
+                        }, 
+                        "targetMemoryUtilizationPercentage": {
                             "type": "integer"
                         }
                     }
@@ -318,9 +321,6 @@
                 "replicas": {
                     "type": "integer"
                 },
-                "targetCPUUtilizationPercentage": {
-                    "type": "integer"
-                }, 
                 "autoscaling": {
                     "type": "object",
                     "additionalProperties": false,
@@ -332,6 +332,12 @@
                             "type": "integer"
                         },
                         "maxReplicas": {
+                            "type": "integer"
+                        },
+                        "targetCPUUtilizationPercentage": {
+                            "type": "integer"
+                        }, 
+                        "targetMemoryUtilizationPercentage": {
                             "type": "integer"
                         }
                     }
