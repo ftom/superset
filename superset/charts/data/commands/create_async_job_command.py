@@ -15,8 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
+import newrelic.agent
 from flask import Request
 
 from superset.extensions import async_query_manager
@@ -33,6 +34,9 @@ class CreateAsyncChartDataJobCommand:
         self._async_channel_id = jwt_data["channel"]
 
     def run(self, form_data: Dict[str, Any], user_id: Optional[str]) -> Dict[str, Any]:
+        headers: List[str] = []
+        newrelic.agent.insert_distributed_trace_headers(headers)
+
         job_metadata = async_query_manager.init_job(self._async_channel_id, user_id)
-        load_chart_data_into_cache.delay(job_metadata, form_data)
+        load_chart_data_into_cache.delay(job_metadata, form_data, headers=headers)
         return job_metadata

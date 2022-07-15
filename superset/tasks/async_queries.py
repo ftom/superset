@@ -18,8 +18,9 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING
+from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING
 
+import newrelic.agent
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app, g
 from marshmallow import ValidationError
@@ -66,14 +67,22 @@ def _create_query_context_from_form(form_data: Dict[str, Any]) -> QueryContext:
 
 
 @celery_app.task(name="load_chart_data_into_cache", soft_time_limit=query_timeout)
+@newrelic.agent.background_task()
 def load_chart_data_into_cache(
     job_metadata: Dict[str, Any],
     form_data: Dict[str, Any],
+    headers: Optional[List[str]] = None,
 ) -> None:
     # pylint: disable=import-outside-toplevel
     from superset.charts.data.commands.get_data_command import ChartDataCommand
 
     try:
+        # Add NewRelic traces
+        if headers:
+            newrelic.agent.accept_distributed_trace_headers(
+                headers, transport_type="Queue"
+            )
+
         ensure_user_is_set(job_metadata.get("user_id"))
         set_form_data(form_data)
         query_context = _create_query_context_from_form(form_data)
@@ -100,14 +109,21 @@ def load_chart_data_into_cache(
 
 
 @celery_app.task(name="load_explore_json_into_cache", soft_time_limit=query_timeout)
+@newrelic.agent.background_task()
 def load_explore_json_into_cache(  # pylint: disable=too-many-locals
     job_metadata: Dict[str, Any],
     form_data: Dict[str, Any],
     response_type: Optional[str] = None,
     force: bool = False,
+    headers: Optional[List[str]] = None,
 ) -> None:
     cache_key_prefix = "ejr-"  # ejr: explore_json request
     try:
+        if headers:
+            newrelic.agent.accept_distributed_trace_headers(
+                headers, transport_type="Queue"
+            )
+
         ensure_user_is_set(job_metadata.get("user_id"))
         set_form_data(form_data)
         datasource_id, datasource_type = get_datasource_info(None, None, form_data)
