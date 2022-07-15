@@ -26,6 +26,7 @@ from urllib import parse
 
 import backoff
 import humanize
+import newrelic.agent
 import pandas as pd
 import simplejson as json
 from flask import abort, flash, g, redirect, render_template, request, Response
@@ -674,8 +675,10 @@ class Superset(BaseSupersetView):  # pylint: disable=too-many-public-methods
                     job_metadata = async_query_manager.init_job(
                         async_channel_id, g.user.get_id()
                     )
+                    headers: List[str] = []
+                    newrelic.agent.insert_distributed_trace_headers(headers)
                     load_explore_json_into_cache.delay(
-                        job_metadata, form_data, response_type, force
+                        job_metadata, form_data, response_type, force, headers
                     )
                 except AsyncQueryTokenException:
                     return json_error_response("Not authorized", 401)
