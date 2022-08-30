@@ -38,7 +38,7 @@ def load_examples_from_configs(
     Load all the examples inside superset/examples/configs/.
     """
     contents = load_contents(load_test_data)
-    command = ImportExamplesCommand(contents, overwrite=True, force_data=force_data)
+    command = ImportExamplesCommand(contents, overwrite=True, force_data=force_data, need_examples_database=True)
     command.run()
 
 
