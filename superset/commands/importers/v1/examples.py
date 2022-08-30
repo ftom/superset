@@ -63,13 +63,14 @@ class ImportExamplesCommand(ImportModelsCommand):
     def __init__(self, contents: Dict[str, str], *args: Any, **kwargs: Any):
         super().__init__(contents, *args, **kwargs)
         self.force_data = kwargs.get("force_data", False)
+        self.need_examples_database = kwargs.get("need_examples_database", False)
 
     def run(self) -> None:
         self.validate()
 
         # rollback to prevent partial imports
         try:
-            self._import(db.session, self._configs, self.overwrite, self.force_data)
+            self._import(db.session, self._configs, self.overwrite, self.force_data, self.need_examples_database)
             db.session.commit()
         except Exception as ex:
             db.session.rollback()
@@ -91,6 +92,7 @@ class ImportExamplesCommand(ImportModelsCommand):
         configs: Dict[str, Any],
         overwrite: bool = False,
         force_data: bool = False,
+        need_examples_database: bool = False
     ) -> None:
         # import databases
         database_ids: Dict[str, int] = {}
@@ -103,7 +105,8 @@ class ImportExamplesCommand(ImportModelsCommand):
         # If database_uuid is not in the list of UUIDs it means that the examples
         # database was created before its UUID was frozen, so it has a random UUID.
         # We need to determine its ID so we can point the dataset to it.
-        examples_db = get_example_database()
+        if need_examples_database:
+            examples_db = get_example_database()
         dataset_info: Dict[str, Dict[str, Any]] = {}
         for file_name, config in configs.items():
             if file_name.startswith("datasets/"):
