@@ -74,7 +74,7 @@ const EmbeddedApp = () => {
       <Route path="/embedded/:uuid/" component={EmbeddedRoute} />
     </Router>
   );
-}
+};
 
 const appMountPoint = document.getElementById('app')!;
 
