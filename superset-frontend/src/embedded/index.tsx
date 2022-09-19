@@ -59,12 +59,14 @@ const EmbeddedRoute = () => (
 
 const EmbeddedApp = () => {
   useEffect(() => {
-    FullStory.init({
-      orgId: process.env.FULLSTORY_ORG_ID!,
-      recordCrossDomainIFrames: true,
-      debug: true,
-    });
-    return FullStory.isInitialized() ? FullStory.shutdown() : undefined;
+    if (process.env.FULLSTORY_ORG_ID) {
+      FullStory.init({
+        orgId: process.env.FULLSTORY_ORG_ID!,
+        recordCrossDomainIFrames: true,
+        debug: true,
+      });
+      return FullStory.isInitialized() ? FullStory.shutdown() : undefined;
+    }
   }, []);
 
   return (
