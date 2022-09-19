@@ -65,8 +65,8 @@ const EmbeddedApp = () => {
         recordCrossDomainIFrames: true,
         debug: true,
       });
-      return FullStory.isInitialized() ? FullStory.shutdown() : undefined;
     }
+    return FullStory.isInitialized() ? FullStory.shutdown() : undefined;
   }, []);
 
   return (
