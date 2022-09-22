@@ -96,30 +96,38 @@ export default async function callApi({
     CACHE_AVAILABLE &&
     (window.location && window.location.protocol) === 'https:'
   ) {
-    const supersetCache = await caches.open(CACHE_KEY);
-    const cachedResponse = await supersetCache.match(url);
-    if (cachedResponse) {
-      // if we have a cached response, send its ETag in the
-      // `If-None-Match` header in a conditional request
-      const etag = cachedResponse.headers.get('Etag') as string;
-      request.headers = { ...request.headers, 'If-None-Match': etag };
-    }
-
-    const response = await fetchWithRetry(url, request);
-
-    if (response.status === HTTP_STATUS_NOT_MODIFIED) {
-      const cachedFullResponse = await supersetCache.match(url);
-      if (cachedFullResponse) {
-        return cachedFullResponse.clone();
+    try {
+      const supersetCache = await caches.open(CACHE_KEY);
+      const cachedResponse = await supersetCache.match(url);
+      if (cachedResponse) {
+        // if we have a cached response, send its ETag in the
+        // `If-None-Match` header in a conditional request
+        const etag = cachedResponse.headers.get('Etag') as string;
+        request.headers = { ...request.headers, 'If-None-Match': etag };
       }
-      throw new Error('Received 304 but no content is cached!');
-    }
-    if (response.status === HTTP_STATUS_OK && response.headers.get('Etag')) {
-      supersetCache.delete(url);
-      supersetCache.put(url, response.clone());
-    }
 
-    return response;
+      const response = await fetchWithRetry(url, request);
+
+      if (response.status === HTTP_STATUS_NOT_MODIFIED) {
+        const cachedFullResponse = await supersetCache.match(url);
+        if (cachedFullResponse) {
+          return cachedFullResponse.clone();
+        }
+        throw new Error('Received 304 but no content is cached!');
+      }
+      if (response.status === HTTP_STATUS_OK && response.headers.get('Etag')) {
+        supersetCache.delete(url);
+        supersetCache.put(url, response.clone());
+      }
+
+      return response;
+    } catch (e) {
+      console.warn(
+        'CacheStorage is not available, cookies are perhaps blocked',
+        e,
+      );
+      return fetchWithRetry(url, request);
+    }
   }
 
   if (method === 'POST' || method === 'PATCH' || method === 'PUT') {
