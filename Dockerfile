@@ -64,7 +64,7 @@ RUN /frontend-mem-nag.sh \
 
 # This seems to be the most expensive step
 RUN cd /app/superset-frontend \
-        && FULLSTORY_ORG_ID=F69Q npm run ${BUILD_CMD} \
+        && npm run ${BUILD_CMD} \
         && rm -rf node_modules
 
 
