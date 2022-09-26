@@ -463,7 +463,7 @@ class Header extends React.PureComponent {
     const userCanCurate =
       isFeatureEnabled(FeatureFlag.EMBEDDED_SUPERSET) &&
       findPermission('can_set_embedded', 'Dashboard', user.roles);
-    const userIsGuest = !!Object.keys(user.roles).find(key => key === 'Guest');
+    const userIsGuest = Object.keys(user.roles).some(key => key === 'Guest');
     const refreshLimit =
       dashboardInfo.common?.conf?.SUPERSET_DASHBOARD_PERIODICAL_REFRESH_LIMIT;
     const refreshWarning =
@@ -609,9 +609,9 @@ class Header extends React.PureComponent {
                       data-test="query-save-button"
                       className="action-button"
                       css={editButtonStyle}
-                      aria-label={'Edit dashboardsss'}
+                      aria-label={t('Edit dashboard')}
                     >
-                      {'Edit dashboardsss'}
+                      {t('Edit dashboard')}
                     </Button>
                   )}
                 </div>
