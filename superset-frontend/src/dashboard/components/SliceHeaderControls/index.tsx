@@ -308,6 +308,7 @@ class SliceHeaderControls extends React.PureComponent<
               : t('Show chart description')}
           </Menu.Item>
         )}
+
         {this.props.supersetCanExplore && (
           <Menu.Item
             key={MENU_KEYS.EXPLORE_CHART}

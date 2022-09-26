@@ -48,7 +48,7 @@ import setPeriodicRunner, {
   stopPeriodicRender,
 } from 'src/dashboard/util/setPeriodicRunner';
 import { options as PeriodicRefreshOptions } from 'src/dashboard/components/RefreshIntervalModal';
-import findPermission from 'src/dashboard/util/findPermission';
+import findPermission, { isUserGuest } from 'src/dashboard/util/findPermission';
 import { FILTER_BOX_MIGRATION_STATES } from 'src/explore/constants';
 import { PageHeaderWithActions } from 'src/components/PageHeaderWithActions';
 import { DashboardEmbedModal } from '../DashboardEmbedControls';
@@ -452,6 +452,7 @@ class Header extends React.PureComponent {
       filterboxMigrationState,
     } = this.props;
 
+    const userIsGuest = isUserGuest(user);
     const userCanEdit =
       dashboardInfo.dash_edit_perm &&
       filterboxMigrationState !== FILTER_BOX_MIGRATION_STATES.REVIEWING &&
@@ -463,7 +464,6 @@ class Header extends React.PureComponent {
     const userCanCurate =
       isFeatureEnabled(FeatureFlag.EMBEDDED_SUPERSET) &&
       findPermission('can_set_embedded', 'Dashboard', user.roles);
-    const userIsGuest = Object.keys(user.roles).some(key => key === 'Guest');
     const refreshLimit =
       dashboardInfo.common?.conf?.SUPERSET_DASHBOARD_PERIODICAL_REFRESH_LIMIT;
     const refreshWarning =

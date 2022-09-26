@@ -35,6 +35,7 @@ import {
   getActiveFilters,
   getAppliedFilterValues,
 } from 'src/dashboard/util/activeDashboardFilters';
+import { isUserGuest } from 'src/dashboard/util/findPermission';
 import getFormDataWithExtraFilters from 'src/dashboard/util/charts/getFormDataWithExtraFilters';
 import Chart from 'src/dashboard/components/gridComponents/Chart';
 import { PLACEHOLDER_DATASOURCE } from 'src/dashboard/constants';
@@ -52,6 +53,7 @@ function mapStateToProps(
     sliceEntities,
     nativeFilters,
     common,
+    user,
   },
   ownProps,
 ) {
@@ -98,7 +100,7 @@ function mapStateToProps(
     supersetCanShare: !!dashboardInfo.superset_can_share,
     supersetCanCSV: !!dashboardInfo.superset_can_csv,
     sliceCanEdit: !!dashboardInfo.slice_can_edit,
-    userIsGuest: true,
+    userIsGuest: isUserGuest(user),
     ownState: dataMask[id]?.ownState,
     filterState: dataMask[id]?.filterState,
     maxRows: common.conf.SQL_MAX_ROW,
