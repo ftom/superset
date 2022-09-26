@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { t } from '@superset-ui/core';
 import { Switchboard } from '@superset-ui/switchboard';
+import * as FullStory from '@fullstory/browser';
 import { bootstrapData } from 'src/preamble';
 import setupClient from 'src/setup/setupClient';
 import { RootContextProviders } from 'src/views/RootContextProviders';
@@ -56,13 +57,24 @@ const EmbeddedRoute = () => (
   </Suspense>
 );
 
-const EmbeddedApp = () => (
-  <Router>
-    {/* todo (embedded) remove this line after uuids are deployed */}
-    <Route path="/dashboard/:idOrSlug/embedded/" component={EmbeddedRoute} />
-    <Route path="/embedded/:uuid/" component={EmbeddedRoute} />
-  </Router>
-);
+const EmbeddedApp = () => {
+  useEffect(() => {
+    FullStory.init({
+      orgId: 'F69Q',
+      recordCrossDomainIFrames: true,
+      // debug: true,
+    });
+    return FullStory.isInitialized() ? FullStory.shutdown() : undefined;
+  }, []);
+
+  return (
+    <Router>
+      {/* todo (embedded) remove this line after uuids are deployed */}
+      <Route path="/dashboard/:idOrSlug/embedded/" component={EmbeddedRoute} />
+      <Route path="/embedded/:uuid/" component={EmbeddedRoute} />
+    </Router>
+  );
+};
 
 const appMountPoint = document.getElementById('app')!;
 
