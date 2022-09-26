@@ -59,6 +59,7 @@ const propTypes = {
   userCanShare: PropTypes.bool.isRequired,
   userCanSave: PropTypes.bool.isRequired,
   userCanCurate: PropTypes.bool.isRequired,
+  userIsGuest: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   layout: PropTypes.object.isRequired,
   expandedSlices: PropTypes.object.isRequired,
@@ -217,6 +218,7 @@ class HeaderActionsDropdown extends React.PureComponent {
       userCanShare,
       userCanSave,
       userCanCurate,
+      userIsGuest,
       isLoading,
       refreshLimit,
       refreshWarning,
@@ -241,7 +243,7 @@ class HeaderActionsDropdown extends React.PureComponent {
 
     return (
       <Menu selectable={false} data-test="header-actions-menu" {...rest}>
-        {!editMode && (
+        {!editMode && !userIsGuest && (
           <Menu.Item
             key={MENU_KEYS.REFRESH_DASHBOARD}
             data-test="refresh-dashboard-menu-item"
@@ -251,7 +253,7 @@ class HeaderActionsDropdown extends React.PureComponent {
             {t('Refresh dashboard')}
           </Menu.Item>
         )}
-        {!editMode && (
+        {!editMode && !userIsGuest && (
           <Menu.Item
             key={MENU_KEYS.TOGGLE_FULLSCREEN}
             onClick={this.handleMenuClick}
@@ -279,7 +281,7 @@ class HeaderActionsDropdown extends React.PureComponent {
             />
           </Menu.Item>
         )}
-        <Menu.Divider />
+        {!userIsGuest && <Menu.Divider />}
         {userCanSave && (
           <Menu.Item key={MENU_KEYS.SAVE_MODAL}>
             <SaveModal
@@ -340,7 +342,7 @@ class HeaderActionsDropdown extends React.PureComponent {
             {t('Embed dashboard')}
           </Menu.Item>
         )}
-        <Menu.Divider />
+        {!userIsGuest && <Menu.Divider />}
         {!editMode ? (
           this.state.showReportSubMenu ? (
             <>
@@ -378,17 +380,19 @@ class HeaderActionsDropdown extends React.PureComponent {
             </Menu.Item>
           )}
 
-        <Menu.Item key={MENU_KEYS.AUTOREFRESH_MODAL}>
-          <RefreshIntervalModal
-            addSuccessToast={this.props.addSuccessToast}
-            refreshFrequency={refreshFrequency}
-            refreshLimit={refreshLimit}
-            refreshWarning={refreshWarning}
-            onChange={this.changeRefreshInterval}
-            editMode={editMode}
-            triggerNode={<span>{t('Set auto-refresh interval')}</span>}
-          />
-        </Menu.Item>
+        {!userIsGuest && (
+          <Menu.Item key={MENU_KEYS.AUTOREFRESH_MODAL}>
+            <RefreshIntervalModal
+              addSuccessToast={this.props.addSuccessToast}
+              refreshFrequency={refreshFrequency}
+              refreshLimit={refreshLimit}
+              refreshWarning={refreshWarning}
+              onChange={this.changeRefreshInterval}
+              editMode={editMode}
+              triggerNode={<span>{t('Set auto-refresh interval')}</span>}
+            />
+          </Menu.Item>
+        )}
       </Menu>
     );
   }
