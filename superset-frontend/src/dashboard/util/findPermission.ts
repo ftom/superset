@@ -52,11 +52,11 @@ export const isUserAdmin = (
 export const isUserGuest = (
   user: UserWithPermissionsAndRoles | UndefinedUser,
 ) =>
-  (isUserWithPermissionsAndRoles(user) &&
-    Object.keys(user.roles).length === 0) ||
-  Object.keys(user.roles || {}).some(
-    role => role.toLowerCase() === GUEST_ROLE_NAME,
-  );
+  isUserWithPermissionsAndRoles(user) &&
+  (Object.keys(user.roles).length === 0 ||
+    Object.keys(user.roles || {}).some(
+      role => role.toLowerCase() === GUEST_ROLE_NAME,
+    ));
 
 const isUserDashboardOwner = (
   dashboard: Dashboard,
