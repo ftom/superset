@@ -122,6 +122,7 @@ export interface SliceHeaderControlsProps {
   supersetCanShare?: boolean;
   supersetCanCSV?: boolean;
   sliceCanEdit?: boolean;
+  userIsGuest?: boolean;
 }
 interface State {
   showControls: boolean;
@@ -236,6 +237,7 @@ class SliceHeaderControls extends React.PureComponent<
       addSuccessToast = () => {},
       addDangerToast = () => {},
       supersetCanShare = false,
+      userIsGuest = false,
       isCached = [],
     } = this.props;
     const crossFilterItems = getChartMetadataRegistry().items;
@@ -279,21 +281,25 @@ class SliceHeaderControls extends React.PureComponent<
         selectable={false}
         data-test={`slice_${slice.slice_id}-menu`}
       >
-        <Menu.Item
-          key={MENU_KEYS.FORCE_REFRESH}
-          disabled={this.props.chartStatus === 'loading'}
-          style={{ height: 'auto', lineHeight: 'initial' }}
-          data-test="refresh-chart-menu-item"
-        >
-          {t('Force refresh')}
-          <RefreshTooltip data-test="dashboard-slice-refresh-tooltip">
-            {refreshTooltip}
-          </RefreshTooltip>
-        </Menu.Item>
+        {!userIsGuest && (
+          <Menu.Item
+            key={MENU_KEYS.FORCE_REFRESH}
+            disabled={this.props.chartStatus === 'loading'}
+            style={{ height: 'auto', lineHeight: 'initial' }}
+            data-test="refresh-chart-menu-item"
+          >
+            {t('Force refresh')}
+            <RefreshTooltip data-test="dashboard-slice-refresh-tooltip">
+              {refreshTooltip}
+            </RefreshTooltip>
+          </Menu.Item>
+        )}
 
-        <Menu.Item key={MENU_KEYS.FULLSCREEN}>{fullscreenLabel}</Menu.Item>
+        {!userIsGuest && (
+          <Menu.Item key={MENU_KEYS.FULLSCREEN}>{fullscreenLabel}</Menu.Item>
+        )}
 
-        <Menu.Divider />
+        {!userIsGuest && <Menu.Divider />}
 
         {slice.description && (
           <Menu.Item key={MENU_KEYS.TOGGLE_CHART_DESCRIPTION}>
@@ -367,7 +373,8 @@ class SliceHeaderControls extends React.PureComponent<
           <Menu.Divider />
         )}
 
-        {isFeatureEnabled(FeatureFlag.DASHBOARD_CROSS_FILTERS) &&
+        {!userIsGuest &&
+          isFeatureEnabled(FeatureFlag.DASHBOARD_CROSS_FILTERS) &&
           isCrossFilter &&
           canEmitCrossFilter && (
             <>

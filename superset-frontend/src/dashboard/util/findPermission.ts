@@ -38,6 +38,8 @@ export default findPermission;
 // this should really be a config value,
 // but is hardcoded in backend logic already, so...
 const ADMIN_ROLE_NAME = 'admin';
+// Role used to display embedded dashboard
+const GUEST_ROLE_NAME = 'guest';
 
 export const isUserAdmin = (
   user: UserWithPermissionsAndRoles | UndefinedUser,
@@ -46,6 +48,15 @@ export const isUserAdmin = (
   Object.keys(user.roles || {}).some(
     role => role.toLowerCase() === ADMIN_ROLE_NAME,
   );
+
+export const isUserGuest = (
+  user: UserWithPermissionsAndRoles | UndefinedUser,
+) =>
+  isUserWithPermissionsAndRoles(user) &&
+  (Object.keys(user.roles).length === 0 ||
+    Object.keys(user.roles || {}).some(
+      role => role.toLowerCase() === GUEST_ROLE_NAME,
+    ));
 
 const isUserDashboardOwner = (
   dashboard: Dashboard,
