@@ -403,14 +403,17 @@ class SliceHeaderControls extends React.PureComponent<
         {this.props.slice.viz_type !== 'filter_box' &&
           this.props.supersetCanCSV && (
             <Menu.SubMenu title={t('Download')}>
-              <Menu.Item
-                key={MENU_KEYS.EXPORT_CSV}
-                icon={<Icons.FileOutlined css={dropdownIconsStyles} />}
-              >
-                {t('Export to .CSV')}
-              </Menu.Item>
+              {!userIsGuest && (
+                <Menu.Item
+                  key={MENU_KEYS.EXPORT_CSV}
+                  icon={<Icons.FileOutlined css={dropdownIconsStyles} />}
+                >
+                  {t('Export to .CSV')}
+                </Menu.Item>
+              )}
 
-              {this.props.slice.viz_type !== 'filter_box' &&
+              {!userIsGuest &&
+                this.props.slice.viz_type !== 'filter_box' &&
                 isFeatureEnabled(FeatureFlag.ALLOW_FULL_CSV_EXPORT) &&
                 this.props.supersetCanCSV &&
                 isTable && (
@@ -421,7 +424,6 @@ class SliceHeaderControls extends React.PureComponent<
                     {t('Export to full .CSV')}
                   </Menu.Item>
                 )}
-
               <Menu.Item
                 key={MENU_KEYS.DOWNLOAD_AS_IMAGE}
                 icon={<Icons.FileImageOutlined css={dropdownIconsStyles} />}
