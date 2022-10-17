@@ -21,6 +21,7 @@ import pytest
 from superset.utils.core import (
     AdhocColumn,
     AdhocMetric,
+    extract_connection_id_from_all_schema_perms,
     ExtraFiltersReasonType,
     ExtraFiltersTimeColumnType,
     GenericDataType,
@@ -222,3 +223,20 @@ def test_get_time_filter_status_no_temporal_col():
             }
         ],
     )
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ([], []),
+        (["Connection.(id:13)"], [13]),
+        (["Connection.(id:13)", "Another Connection.(id:11)"], [13, 11]),
+        (
+            ["Connection.(id: 13)"],
+            [],
+        ),  # extra space between 'id:' and the connection id is not expected
+    ],
+)
+def test_extract_connection_id_from_all_schema_perms(input, expected):
+    ids = extract_connection_id_from_all_schema_perms(input)
+    assert ids == expected

@@ -1881,3 +1881,23 @@ def create_zip(files: Dict[str, Any]) -> BytesIO:
                 fp.write(contents)
     buf.seek(0)
     return buf
+
+
+def extract_connection_id_from_all_schema_perms(
+    all_schema_perms: Set[str],
+) -> List[int]:
+    regex = ".*\(id:(\d+)\).*"
+    connection_ids = []
+    for connection_perm in all_schema_perms:
+        result = re.search(regex, connection_perm)
+        if result and len(result.groups()) == 1:
+            connection_ids.append(int(result.group(1)))
+        elif result:
+            logger.warning(
+                f"Unable to properly parse the all_schema_perms: '{connection_perm}'. Found {len(result.groups())} instead of 1."
+            )
+        else:
+            logger.warning(
+                f"Unable to parse the all_schema_perms: '{connection_perm}'."
+            )
+    return connection_ids
