@@ -149,6 +149,20 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
     const { Chart, transformProps } = loaded;
     const { chartProps, preTransformProps, postTransformProps } = props;
 
+    const firstQueryData = chartProps.queriesData[0];
+    if (firstQueryData?.data) {
+      const uniqueKey = Object.keys(firstQueryData.data[0])?.[0];
+      chartProps.queriesData[0].data = chartProps.queriesData[0].data?.sort(
+        (a, b) => {
+          if (uniqueKey in a && uniqueKey in b) {
+            if (a[uniqueKey] > b[uniqueKey]) return 1;
+            if (b[uniqueKey] > a[uniqueKey]) return -1;
+          }
+          return 0;
+        },
+      );
+    }
+
     return (
       <Chart
         {...this.processChartProps({

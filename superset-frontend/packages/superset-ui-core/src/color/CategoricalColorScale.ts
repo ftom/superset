@@ -63,9 +63,15 @@ class CategoricalColorScale extends ExtensibleFunction {
     this.multiple = 0;
   }
 
-  toColor(name?: string) {
-    if (!name) return '#000';
-    if (name.length === 0) return '#000';
+  /**
+   * Get one of the origin colors by hash
+   * @see https://gist.github.com/0x263b/2bdd90886c2036a1ad5bcf06d6e6fb37#color-from-array
+   * @param name data bucket name
+   */
+  toColor(name: string) {
+    if (name.length === 0) {
+      return this.scale(name);
+    }
     let hash = 0;
     [...name].forEach((c, i) => {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -73,7 +79,6 @@ class CategoricalColorScale extends ExtensibleFunction {
     });
     const colors = this.originColors;
     hash = ((hash % colors.length) + colors.length) % colors.length;
-    // console.log({ name, hash, colors });
     return colors[hash];
   }
 
@@ -108,18 +113,6 @@ class CategoricalColorScale extends ExtensibleFunction {
     const color = this.toColor(cleanedValue);
     sharedLabelColor.addSlice(cleanedValue, color, sliceId);
 
-    /*
-    console.log({
-      sliceId,
-      value,
-      cleanedValue,
-      color,
-      sharedLabelColor,
-      parentColor,
-      forcedColor,
-    });
-    */
-
     return color;
   }
 
@@ -134,7 +127,7 @@ class CategoricalColorScale extends ExtensibleFunction {
   }
 
   /**
-   * Get a mapping of data values to colors
+   * Get a mapping of data values to color
    * @returns an object where the key is the data value and the value is the hex color code
    */
   getColorMap() {
@@ -196,7 +189,7 @@ class CategoricalColorScale extends ExtensibleFunction {
    *
    * If there are fewer elements in the range than in the domain, the scale will reuse values from the start of the range.
    *
-   * @param range Array of range values.
+   * @param newRange Array of range values.
    */
   range(newRange: string[]): this;
 
