@@ -63,8 +63,22 @@ class CategoricalColorScale extends ExtensibleFunction {
     this.multiple = 0;
   }
 
+  toColor(name?: string) {
+    if (!name) return '#000';
+    if (name.length === 0) return '#000';
+    let hash = 0;
+    [...name].forEach((c, i) => {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      hash &= hash;
+    });
+    const colors = this.originColors;
+    hash = ((hash % colors.length) + colors.length) % colors.length;
+    // console.log({ name, hash, colors });
+    return colors[hash];
+  }
+
   getColor(value?: string, sliceId?: number) {
-    const cleanedValue = stringifyAndTrim(value);
+    const cleanedValue = stringifyAndTrim(value).toLocaleLowerCase();
     const sharedLabelColor = getSharedLabelColor();
 
     const parentColor =
@@ -91,8 +105,20 @@ class CategoricalColorScale extends ExtensibleFunction {
       }
     }
 
-    const color = this.scale(cleanedValue);
+    const color = this.toColor(cleanedValue);
     sharedLabelColor.addSlice(cleanedValue, color, sliceId);
+
+    /*
+    console.log({
+      sliceId,
+      value,
+      cleanedValue,
+      color,
+      sharedLabelColor,
+      parentColor,
+      forcedColor,
+    });
+    */
 
     return color;
   }
