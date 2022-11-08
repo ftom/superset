@@ -72,13 +72,15 @@ class CategoricalColorScale extends ExtensibleFunction {
     if (name.length === 0) {
       return this.scale(name);
     }
+    const { colors } = this;
+    const colorsLength = colors.length;
     let hash = 0;
-    [...name].forEach((c, i) => {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    const sanitizedName = name.replace(/[^a-zA-Z0-9 ]/g, '');
+    [...sanitizedName].forEach((c, i) => {
+      hash = sanitizedName.charCodeAt(i) + ((hash << 5) - hash);
       hash &= hash;
     });
-    const colors = this.originColors;
-    hash = ((hash % colors.length) + colors.length) % colors.length;
+    hash = ((hash % colorsLength) + colorsLength) % colorsLength;
     return colors[hash];
   }
 
