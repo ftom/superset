@@ -57,6 +57,10 @@ interface LoadedModules {
   transformProps: TransformProps;
 }
 
+interface Data {
+  [key: string]: unknown;
+}
+
 interface RenderProps {
   chartProps: ChartProps;
   preTransformProps?: PreTransformProps;
@@ -151,15 +155,11 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
 
     const firstQueryData = chartProps.queriesData[0];
     if (firstQueryData?.data) {
-      const uniqueKey = Object.keys(firstQueryData.data[0])?.[0];
-      chartProps.queriesData[0].data = chartProps.queriesData[0].data?.sort(
-        (a, b) => {
-          if (uniqueKey in a && uniqueKey in b) {
-            if (a[uniqueKey] > b[uniqueKey]) return 1;
-            if (b[uniqueKey] > a[uniqueKey]) return -1;
-          }
-          return 0;
-        },
+      const firstData: Data = firstQueryData.data[0];
+      const uniqueKey: keyof Data = Object.keys(firstData)[0];
+      chartProps.queriesData[0].data = firstQueryData.data.sort(
+        (a: Data, b: Data) =>
+          String(a[uniqueKey]).localeCompare(String(b[uniqueKey])),
       );
     }
 
