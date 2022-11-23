@@ -505,6 +505,7 @@ function nvd3Vis(element, props) {
 
       case 'bubble':
         chart = nv.models.scatterChart();
+        chart.useVoronoi(false);
         chart.showDistX(false);
         chart.showDistY(false);
         chart.tooltip.contentGenerator(d =>
