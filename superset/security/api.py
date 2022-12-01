@@ -18,7 +18,7 @@ import logging
 from typing import Any, Dict
 
 import requests
-from flask import redirect, request, Response
+from flask import current_app, redirect, request, Response
 from flask_appbuilder import expose
 from flask_appbuilder.api import BaseApi, safe
 from flask_appbuilder.security.decorators import permission_name, protect
@@ -174,7 +174,7 @@ class SecurityRestApi(BaseApi):
         headers = {"Authorization": token_val, "accept": "application/json"}
 
         response = requests.get(
-            "https://dev-api.khinternal.net/platform-rbac-stage/v1/users/me?expand=organizations.accounts",
+            f"{current_app.config.get('PLATFORM_RBAC_BASE_URL')}/v1/users/me?expand=organizations.accounts",
             headers=headers,
         )
 
