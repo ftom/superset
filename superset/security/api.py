@@ -167,6 +167,7 @@ class SecurityRestApi(BaseApi):
     @expose("/custom_login/", methods=["GET"])
     @event_logger.log_this
     @safe
+    @protect()
     @permission_name("read")
     def custom_login(self) -> Response:
         token_val = request.headers.get("Authorization")
@@ -174,22 +175,20 @@ class SecurityRestApi(BaseApi):
         headers = {"Authorization": token_val, "accept": "application/json"}
 
         response = requests.get(
-            f"{current_app.config.get('PLATFORM_RBAC_BASE_URL')}/v1/users/me?expand=organizations.accounts",
+            f"{current_app.config.get('PLATFORM_RBAC_BASE_URL')}/v1/users/me",
             headers=headers,
         )
 
         if response.status_code != 200:
-            return self.response(400)
+            return self.response(401)
 
         email = response.json().get("email")
-
-        if not email:
-            return self.response(400)
-
+        dashboard_id = request.args.get("dashboard_id")
         user = security_manager.find_user(email=email)
 
-        login_user(user, remember=False)
+        if not email or not dashboard_id or not user:
+            return self.response(401)
 
-        dashboard_id = request.args.get("dashboard_id")
+        login_user(user, remember=False)
 
         return redirect(f"{request.url_root}/{dashboard_id}")
