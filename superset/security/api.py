@@ -17,14 +17,17 @@
 import logging
 from typing import Any, Dict
 
-from flask import request, Response
+import requests
+from flask import current_app, redirect, request, Response
 from flask_appbuilder import expose
 from flask_appbuilder.api import BaseApi, safe
 from flask_appbuilder.security.decorators import permission_name, protect
+from flask_login import login_user
 from flask_wtf.csrf import generate_csrf
 from marshmallow import EXCLUDE, fields, post_load, Schema, ValidationError
 from marshmallow_enum import EnumField
 
+from superset import security_manager
 from superset.embedded_dashboard.commands.exceptions import (
     EmbeddedDashboardNotFoundError,
 )
@@ -160,3 +163,36 @@ class SecurityRestApi(BaseApi):
             return self.response_400(message=error.message)
         except ValidationError as error:
             return self.response_400(message=error.messages)
+
+    @expose("/custom_login/", methods=["GET"])
+    @event_logger.log_this
+    @safe
+    @protect()
+    @permission_name("read")
+    def custom_login(self) -> Response:
+        token_val = request.headers.get("Authorization")
+
+        headers = {"accept": "application/json"}
+        if token_val:
+            headers["Authorization"] = token_val
+
+        response = requests.get(
+            f"{current_app.config.get('PLATFORM_RBAC_BASE_URL')}/v1/users/me",
+            headers=headers,
+        )
+
+        if response.status_code != 200:
+            return self.response(401)
+
+        email = response.json().get("email")
+        dashboard_id = request.args.get("dashboard_id")
+        user = security_manager.find_user(email=email)
+
+        if not email or not dashboard_id or not user:
+            return self.response(401)
+
+        login_user(user, remember=False)
+
+        return redirect(
+            f"{request.url_root}superset/dashboard/{dashboard_id}/", Response=Response
+        )
