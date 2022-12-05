@@ -172,7 +172,9 @@ class SecurityRestApi(BaseApi):
     def custom_login(self) -> Response:
         token_val = request.headers.get("Authorization")
 
-        headers = {"Authorization": token_val, "accept": "application/json"}
+        headers = {"accept": "application/json"}
+        if token_val:
+            headers["Authorization"] = token_val
 
         response = requests.get(
             f"{current_app.config.get('PLATFORM_RBAC_BASE_URL')}/v1/users/me",
@@ -191,4 +193,6 @@ class SecurityRestApi(BaseApi):
 
         login_user(user, remember=False)
 
-        return redirect(f"{request.url_root}/{dashboard_id}")
+        return redirect(
+            f"{request.url_root}superset/dashboard/{dashboard_id}/", Response=Response
+        )
