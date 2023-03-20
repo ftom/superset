@@ -620,6 +620,11 @@ class DatasourceFilter(BaseFilter):  # pylint: disable=too-few-public-methods
             return query
         datasource_perms = security_manager.user_view_menu_names("datasource_access")
         schema_perms = security_manager.user_view_menu_names("schema_access")
+        all_schema_perms = security_manager.user_view_menu_names("all_schema_access")
+        connection_ids = utils.extract_connection_id_from_all_schema_perms(
+            all_schema_perms
+        )
+        print(connection_ids)
         owner_ids_query = (
             db.session.query(models.SqlaTable.id)
             .join(models.SqlaTable.owners)
@@ -632,6 +637,7 @@ class DatasourceFilter(BaseFilter):  # pylint: disable=too-few-public-methods
             or_(
                 self.model.perm.in_(datasource_perms),
                 self.model.schema_perm.in_(schema_perms),
+                self.model.database_id.in_(connection_ids),
                 models.SqlaTable.id.in_(owner_ids_query),
             )
         )

@@ -24,11 +24,14 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm.query import Query
 
 from superset import db, is_feature_enabled, security_manager
+from superset.connectors.sqla import models
+from superset.connectors.sqla.models import SqlaTable
 from superset.models.core import FavStar
 from superset.models.dashboard import Dashboard
 from superset.models.embedded_dashboard import EmbeddedDashboard
 from superset.models.slice import Slice
 from superset.security.guest_token import GuestTokenResourceType, GuestUser
+from superset.utils.core import extract_connection_id_from_all_schema_perms
 from superset.views.base import BaseFilter, is_user_admin
 from superset.views.base_api import BaseFavoriteFilter
 
@@ -102,12 +105,24 @@ class DashboardAccessFilter(BaseFilter):  # pylint: disable=too-few-public-metho
 
         datasource_perms = security_manager.user_view_menu_names("datasource_access")
         schema_perms = security_manager.user_view_menu_names("schema_access")
+        all_schema_perms = security_manager.user_view_menu_names("all_schema_access")
+        connection_ids = extract_connection_id_from_all_schema_perms(all_schema_perms)
 
         is_rbac_disabled_filter = []
         dashboard_has_roles = Dashboard.roles.any()
         if is_feature_enabled("DASHBOARD_RBAC"):
             is_rbac_disabled_filter.append(~dashboard_has_roles)
 
+        datasource_ids = (
+            db.session.query(models.SqlaTable.id)
+            .join(models.Database)
+            .filter(models.Database.id.in_(connection_ids))
+        )
+        slice_ids = (
+            db.session.query(Slice.id)
+            .join(models.SqlaTable, Slice.datasource_id == models.SqlaTable.id)
+            .filter(models.SqlaTable.id.in_(datasource_ids))
+        )
         datasource_perm_query = (
             db.session.query(Dashboard.id)
             .join(Dashboard.slices)
@@ -118,6 +133,7 @@ class DashboardAccessFilter(BaseFilter):  # pylint: disable=too-few-public-metho
                     or_(
                         Slice.perm.in_(datasource_perms),
                         Slice.schema_perm.in_(schema_perms),
+                        Slice.id.in_(slice_ids),
                         security_manager.can_access_all_datasources(),
                     ),
                 )

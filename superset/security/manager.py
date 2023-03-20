@@ -683,6 +683,7 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         databases = self.get_session.query(models.Database).all()
         for database in databases:
             merge_pv("database_access", database.perm)
+            merge_pv("all_schema_access", database.perm)
 
     def clean_perms(self) -> None:
         """

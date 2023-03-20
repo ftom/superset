@@ -24,6 +24,8 @@ from superset import db, security_manager
 from superset.connectors.sqla import models
 from superset.connectors.sqla.models import SqlaTable
 from superset.models.slice import Slice
+from superset.tables.models import Table
+from superset.utils.core import extract_connection_id_from_all_schema_perms
 from superset.views.base import BaseFilter
 from superset.views.base_api import BaseFavoriteFilter
 
@@ -78,6 +80,9 @@ class ChartFilter(BaseFilter):  # pylint: disable=too-few-public-methods
             return query
         perms = security_manager.user_view_menu_names("datasource_access")
         schema_perms = security_manager.user_view_menu_names("schema_access")
+        all_schema_perms = security_manager.user_view_menu_names("all_schema_access")
+        connection_ids = extract_connection_id_from_all_schema_perms(all_schema_perms)
+
         owner_ids_query = (
             db.session.query(models.SqlaTable.id)
             .join(models.SqlaTable.owners)
@@ -86,10 +91,17 @@ class ChartFilter(BaseFilter):  # pylint: disable=too-few-public-methods
                 == security_manager.user_model.get_user_id()
             )
         )
+
+        datasource_ids = (
+            db.session.query(models.SqlaTable.id)
+            .join(models.Database)
+            .filter(models.Database.id.in_(connection_ids))
+        )
         return query.filter(
             or_(
                 self.model.perm.in_(perms),
                 self.model.schema_perm.in_(schema_perms),
+                self.model.datasource_id.in_(datasource_ids),
                 models.SqlaTable.id.in_(owner_ids_query),
             )
         )
